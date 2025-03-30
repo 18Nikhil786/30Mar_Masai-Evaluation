@@ -1,37 +1,169 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Recipee Sharing Web Application</title>
-    <div>
-        <p clas,undes 1="nik"></p>
-    </div>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nikhil's Food Corner</title>
+  <style>
+    body {
+      font-family: 'Poppins', sans-serif;
+      margin: 0;
+      background-color: #eef2f3;
+    }
+    header {
+      background: linear-gradient(to right, #4b79a1, #283e51);
+      color: white;
+      text-align: center;
+      padding: 20px;
+      font-size: 1.5em;
+      font-weight: bold;
+    }
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 25px;
+      padding: 10px 0;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-size: 1.1em;
+      font-weight: 600;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    .container {
+      width: 85%;
+      max-width: 700px;
+      margin: 30px auto;
+      padding: 20px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.15);
+    }
+    input, textarea, select, button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      border: 1px solid #bbb;
+      border-radius: 6px;
+      font-size: 1em;
+    }
+    button {
+      background: #283e51;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    button:hover {
+      background: #4b79a1;
+    }
+    .recipe-card {
+      background: #fff;
+      padding: 18px;
+      margin: 15px 0;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      border: 1px solid #bbb;
+      padding: 10px;
+      text-align: left;
+    }
+  </style>
 </head>
 <body>
-
-    <header>
-
-    
-    <h1>Recipe Sharing App</h1>
+  <header>
+    <h1>Foodie's Corner</h1>
     <nav>
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#add-recipe">Add Recipe</a></li>
-            <li><a href="#view-recipes">View Recipes</a></li>
-        </ul>
+      <a href="#home">Home</a>
+      <a href="#add-recipe">Submit Recipe</a>
+      <a href="#view-recipes">Recipe List</a>
     </nav>
-</header><section id="add-recipe"></section>
-<h2>Add a new recipe</h2>
-<form id="recipe - form">
-    <label for="title">Recipe Title</label>
-    <input type ="text" id="title"required>
-    <label for ="category">Category</label>
-    <option value="Dinner">DINNER</option>
-    <option value="Dessert">DESSERT</option>
-    <option value="Drink">DRINK</option>
-</form>
-<div id ="recipes"></div> 
-</section>
+  </header>
+  <main>
+    <section class="container" id="add-recipe">
+      <h2>Share Your Favorite Recipe</h2>
+      <form id="recipe-form">
+        <label for="recipe-name">Dish Name:</label>
+        <input type="text" id="recipe-name" required>
+
+        <label for="ingredients">Ingredients (comma separated):</label>
+        <textarea id="ingredients" required></textarea>
+
+        <label for="category">Dish Type:</label>
+        <select id="category">
+          <option>Breakfast</option>
+          <option>Lunch</option>
+          <option>Dinner</option>
+          <option>Dessert</option>
+          <option>Drinks</option>
+        </select>
+
+        <label for="instructions">Cooking Steps:</label>
+        <textarea id="instructions" required></textarea>
+
+        <button type="submit">Post Recipe</button>
+      </form>
+    </section>
+    <section class="container" id="view-recipes">
+      <h2>Explore Recipes</h2>
+      <div id="recipe-container"></div>
+    </section>
+  </main>
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const form = document.getElementById("recipe-form");
+      const container = document.getElementById("recipe-container");
+      const getRecipes = () => JSON.parse(localStorage.getItem("recipes")) || [];
+      const saveRecipes = (recipes) => localStorage.setItem("recipes", JSON.stringify(recipes));
+
+      const renderRecipes = () => {
+        container.innerHTML = "";
+        getRecipes().forEach(recipe => {
+          const div = document.createElement("div");
+          div.classList.add("recipe-card");
+          div.innerHTML = `
+            <h3>${recipe.name}</h3>
+            <p><strong>Dish Type:</strong> ${recipe.category}</p>
+            <table>
+              <thead>
+                <tr><th>Ingredients</th></tr>
+              </thead>
+              <tbody>
+                ${recipe.ingredients.map(ing => `<tr><td>${ing}</td></tr>`).join("")}
+              </tbody>
+            </table>
+            <p>${recipe.instructions}</p>
+          `;
+          container.appendChild(div);
+        });
+      };
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const name = document.getElementById("recipe-name").value;
+        const ingredients = document.getElementById("ingredients").value.split(",").map(ing => ing.trim());
+        const category = document.getElementById("category").value;
+        const instructions = document.getElementById("instructions").value;
+
+        const newRecipe = { name, ingredients, category, instructions };
+        const recipes = getRecipes();
+        recipes.push(newRecipe);
+        saveRecipes(recipes);
+        renderRecipes();
+        form.reset();
+      });
+
+      renderRecipes();
+    });
+  </script>
 </body>
 </html>
